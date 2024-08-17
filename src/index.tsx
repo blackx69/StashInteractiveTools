@@ -40,6 +40,7 @@ type Funscript = {
   metadata?: FunscriptMetadata;
   range: number;
 };
+
 function replaceHeatMap(url: string) {
   rootVars.style.setProperty(
     '--stash-interactive-tools-heatmap',
@@ -164,9 +165,10 @@ interface SceneFileInfoContainer {
   };
 }
 
-function shouldInsertInto(el: unknown): el is SceneFileInfoContainer {
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+function shouldInsertInto(el: any): el is SceneFileInfoContainer {
   if (typeof el !== 'object') return false;
-  if (el?.type !== 'dl') return false;
+  if ('type' in el && el?.type !== 'dl') return false;
   return el?.props?.className?.includes('scene-file-info');
 }
 
