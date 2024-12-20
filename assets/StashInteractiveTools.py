@@ -1,5 +1,6 @@
 import json
 import os.path
+import glob
 import re
 import shutil
 import sys
@@ -77,7 +78,8 @@ def get_funscripts(file):
     filename = os.path.basename(file)
     file_dir = Path(os.path.dirname(file))
     name = os.path.splitext(filename)[0]
-    files = list(file_dir.glob(f'{name}*.funscript'))
+    name_escaped = glob.escape(name)
+    files = list(file_dir.glob(f'{name_escaped}*.funscript'))
     return list(filter(lambda f: filter_out_false_versions(name, f), files))
 
 
