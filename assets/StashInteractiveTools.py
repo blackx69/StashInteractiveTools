@@ -87,12 +87,30 @@ def analyze_file(file, scene_id):
 
 
 def analyze_scene():
-    scene_id = FRAGMENT["args"]['scene_id']
-    scene = stash.find_scene(scene_id)
-    # log.info(json.dumps(scene))
-    if scene['interactive']:
-        return analyze_file(scene['files'][0]['path'], scene_id)
+    # Check if a scene ID is provided in FRAGMENT["args"]
+    if "scene_id" in FRAGMENT["args"]:
+        scene_id = FRAGMENT["args"]['scene_id']
+        scene = stash.find_scene(scene_id)
+        # log.info(json.dumps(scene))
+        if scene['interactive']:
+            return analyze_file(scene['files'][0]['path'], scene_id)
+    else:
+        # Otherwise, look for all interactive scenes
+        query = {"interactive": True}
+        scenes = stash.find_scenes(query)
+        if scenes:
+            results = []
+            for scene in scenes:
+                scene_id = scene["id"]
+                if scene['interactive']:
+                    result = analyze_file(scene['files'][0]['path'], scene_id)
+                    results.append(result)
+            return results
+        else:
+            return []
+
     return []
+
 
 
 SCENE_FRAGMENT = """
