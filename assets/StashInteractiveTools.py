@@ -17,7 +17,7 @@ if DEBUG:
     MODE = 'init'
 else:
     FRAGMENT = json.loads(sys.stdin.read())
-    MODE = FRAGMENT["args"]["mode"]
+    MODE = FRAGMENT["args"].get("mode", "init")
 
 stash = StashInterface(FRAGMENT["server_connection"])
 PLUGIN_DIR = FRAGMENT["server_connection"]['PluginDir']
@@ -110,7 +110,6 @@ def analyze_scene():
             return []
 
     return []
-
 
 
 SCENE_FRAGMENT = """
