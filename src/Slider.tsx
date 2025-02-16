@@ -13,6 +13,7 @@ import { hooks, React } from './api';
 import InteractiveAPI = PluginApi.hooks.InteractiveAPI;
 
 type PlayerElement = { player?: videojs.Player } | undefined;
+
 async function withPlayer(callback: (player: videojs.Player) => Promise<void>) {
   const waitFor = async () => {
     const el = document.getElementsByTagName('video-js')[0] as PlayerElement;
@@ -24,6 +25,7 @@ async function withPlayer(callback: (player: videojs.Player) => Promise<void>) {
   };
   return waitFor();
 }
+
 export type SliderContext<T> = {
   currentValue: T;
   interactive: InteractiveAPI;

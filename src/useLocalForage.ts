@@ -6,7 +6,7 @@ import {
   ConfigurationQueryHookResult,
   ConfigureInterfaceMutationHookResult,
 } from './generated-graphql';
-import { hooks, GQL, utils } from './api';
+import { GQL, hooks, utils } from './api';
 
 interface ILocalForage<T> {
   data: T;
@@ -76,6 +76,7 @@ export interface StashToolsConfig {
   useSavedOffset: boolean;
   slideInfo: SlideInfo;
 }
+
 const LOCAL_FORAGE_KEY = 'StashInteractiveTools';
 export const useStashToolsConfig = (): [
   ILocalForage<StashToolsConfig>,
@@ -116,7 +117,7 @@ export const useStashToolsConfig = (): [
       } else if (stashConfig) {
         syncOffset = stashConfig.configuration.interface.funscriptOffset ?? 0;
       }
-      console.log('querySlideSettings', completed, data, syncOffset);
+
       setCompleted(true);
       Promise.all([
         configurInterfaceMutation({
