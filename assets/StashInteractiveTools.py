@@ -35,8 +35,7 @@ def init():
     stash = StashInterface(FRAGMENT["server_connection"])
     PLUGIN_DIR = FRAGMENT["server_connection"]['PluginDir']
     PLUGIN_HTTP_ASSETS_PATH = stash.url.replace('/graphql',
-                                                '/plugin/StashInteractiveTools/assets').replace(
-        '127.0.0.1', 'localhost')
+                                                '/plugin/StashInteractiveTools/assets')
     return mode
 
 
@@ -69,7 +68,7 @@ def parse_label_default(script_filename, file_filename):
 
 
 def map_script(script, file, scene_id):
-    output = os.path.join(PLUGIN_DIR, '.scripts', scene_id)
+    output = os.path.join(PLUGIN_DIR, '.scripts', scene_id)                                      # type: ignore
     if not os.path.exists(output):
         os.makedirs(output, exist_ok=True)
 
