@@ -1,10 +1,10 @@
 name: Stash Interactive Tools
 description: Enhance your Stash Interactive experience
-version: 0.1
+version: 0.2
 url: https://github.com/blackx69/StashInteractiveTools/
 exec:
   - python
-  - "{pluginDir}/StashInteractiveTools.py"
+  - '{pluginDir}/StashInteractiveTools.py'
 interface: raw
 ui:
   css:
@@ -17,7 +17,7 @@ ui:
     - PythonToolsInstaller
   csp:
     connect-src:
-      - "blob:"
+      - 'blob:'
 
 settings:
   enable_tagging:
@@ -29,12 +29,11 @@ settings:
   naming_convention:
     type: STRING
 tasks:
-  - name: "init"
+  - name: 'init'
     description: Build information about interactive scene
     defaultArgs:
       mode: init
-  - name: "tag"
+  - name: 'tag'
     description: Apply Tag
     defaultArgs:
       mode: tag
-

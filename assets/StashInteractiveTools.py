@@ -180,7 +180,8 @@ def main():
     global ENABLE_TAGGING, TAG_NAME,NAMING_CONVENTION
     mode = init()
     ENABLE_TAGGING,TAG_NAME,NAMING_CONVENTION = fetch_config()
-    if mode == 'init':
+    # Only run 'init' when a scene id has been passed
+    if mode == 'init' and 'scene_id' in FRAGMENT['args']:
         scripts = analyze_scene()
         log.debug({'scripts': scripts})
         log.exit()
