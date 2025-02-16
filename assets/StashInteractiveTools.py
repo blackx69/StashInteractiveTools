@@ -1,9 +1,12 @@
 import json
+import os
 import os.path
 import re
 import shutil
 import sys
+import traceback
 import urllib.parse
+from datetime import datetime
 from pathlib import Path
 
 import stashapi.log as log
@@ -11,31 +14,58 @@ from stashapi.stashapp import StashInterface
 
 DEBUG = False
 ID = 'StashInteractiveTools'
-if DEBUG:
-    f = open('./payload.json')
-    FRAGMENT = json.load(f)
-    MODE = 'init'
-else:
-    FRAGMENT = json.loads(sys.stdin.read())
-    MODE = FRAGMENT["args"]["mode"]
+stash: StashInterface
+PLUGIN_DIR = ''
+PLUGIN_HTTP_ASSETS_PATH = ''
+FRAGMENT = {}
 
-stash = StashInterface(FRAGMENT["server_connection"])
-PLUGIN_DIR = FRAGMENT["server_connection"]['PluginDir']
-PLUGIN_HTTP_ASSETS_PATH = stash.url.replace('/graphql',
-                                            '/plugin/StashInteractiveTools/assets').replace(
-    '127.0.0.1', 'localhost')
+
+def init():
+    global stash, PLUGIN_DIR, PLUGIN_HTTP_ASSETS_PATH, FRAGMENT
+    mode = 'init'
+    if DEBUG or os.environ.get('STASH_INTERACTIVE_TOOLS_DEBUG'):
+        f = open('./payload.json')
+        FRAGMENT = json.load(f)
+        f.close()
+
+    else:
+        FRAGMENT = json.loads(sys.stdin.read())
+        mode = FRAGMENT["args"]["mode"]
+
+    stash = StashInterface(FRAGMENT["server_connection"])
+    PLUGIN_DIR = FRAGMENT["server_connection"]['PluginDir']
+    PLUGIN_HTTP_ASSETS_PATH = stash.url.replace('/graphql',
+                                                '/plugin/StashInteractiveTools/assets').replace(
+        '127.0.0.1', 'localhost')
+    return mode
 
 
 def fetch_config():
     config = stash.find_plugin_config(ID)
     enable = bool(config.get('enable_tagging'))
     tag_name = config.get('multi_script_tag')
+    naming_convention = config.get('naming_convention')
     if not tag_name:
         tag_name = '[SIT: Multi-Script]'
-    return enable, tag_name
+    return enable, tag_name, naming_convention
 
 
-ENABLE_TAGGING, TAG_NAME = fetch_config()
+
+ENABLE_TAGGING = False
+TAG_NAME = '[SIT: Multi-Script]'
+NAMING_CONVENTION = ''
+
+
+
+def parse_label_regex(script_filename, file_filename):
+    pass
+
+
+def parse_label_default(script_filename, file_filename):
+    same_name = script_filename == file_filename
+    label = 'Default' if same_name else script_filename.replace(
+        file_filename, '')
+    return re.sub(r'[()]', '', label).strip()
 
 
 def map_script(script, file, scene_id):
@@ -48,16 +78,14 @@ def map_script(script, file, scene_id):
     script_filename = os.path.splitext(script_base_name)[0]
 
     shutil.copyfile(script, os.path.join(output, script_base_name))
-    label = 'Default' if script_filename == file_filename else script_filename.replace(
-        file_filename, '')
 
     path = f'{PLUGIN_HTTP_ASSETS_PATH}/.scripts/{scene_id}/{urllib.parse.quote(script_filename)}.funscript'
-
-    label = re.sub(r'[()]', '', label).strip()
+    parser = parse_label_default if not NAMING_CONVENTION else parse_label_regex
+    label = parser(script_filename, file_filename)
     return {'label': label, 'path': path}
 
 
-VIDEO_EXTENSIONS = ['mp4', 'mov', 'wmv', 'avi']
+VIDEO_EXTENSIONS = ['mp4', 'mov', 'wmv', 'avi', 'mkv']
 
 
 def filter_out_false_versions(base_name, file):
@@ -149,14 +177,26 @@ def tag_scenes():
 
 
 def main():
-    if MODE == 'init':
+    global ENABLE_TAGGING, TAG_NAME,NAMING_CONVENTION
+    mode = init()
+    ENABLE_TAGGING,TAG_NAME,NAMING_CONVENTION = fetch_config()
+    if mode == 'init':
         scripts = analyze_scene()
         log.debug({'scripts': scripts})
         log.exit()
-    elif MODE == 'tag':
+    elif mode == 'tag':
         tag_scenes()
         log.exit()
 
 
 if __name__ == "__main__":
-    main()
+    try:
+        main()
+    except Exception as e:
+        f = open(
+            'error-{}.json'.format(datetime.now().strftime("%Y%m%d-%H%M%S")),
+            'w+')
+        if isinstance(FRAGMENT, dict):
+            f.write(FRAGMENT['args'])
+        f.write(traceback.format_exc())
+        f.close()

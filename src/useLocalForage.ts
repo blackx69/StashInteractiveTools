@@ -106,7 +106,8 @@ export const useStashToolsConfig = (): [
   }, [interactive, setConfig]);
   React.useEffect(() => {
     if (!initialised) return;
-    if (!completed) {
+    const shouldApply = !completed && stashConfig && data;
+    if (shouldApply) {
       let syncOffset = 0;
       if (!Number.isNaN(data.syncOffset)) {
         if (data.useSavedOffset) {
@@ -115,18 +116,18 @@ export const useStashToolsConfig = (): [
       } else if (stashConfig) {
         syncOffset = stashConfig.configuration.interface.funscriptOffset ?? 0;
       }
-      configurInterfaceMutation({
-        variables: {
-          input: {
-            funscriptOffset: syncOffset,
+      console.log('querySlideSettings', completed, data, syncOffset);
+      setCompleted(true);
+      Promise.all([
+        configurInterfaceMutation({
+          variables: {
+            input: {
+              funscriptOffset: syncOffset,
+            },
           },
-        },
-      }).catch(console.error);
-      querySlideSettings()
-        .catch(console.error)
-        .finally(() => {
-          setCompleted(true);
-        });
+        }),
+        querySlideSettings(),
+      ]).catch(console.error);
     }
   }, [
     initialised,

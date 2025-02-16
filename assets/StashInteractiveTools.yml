@@ -26,6 +26,8 @@ settings:
   multi_script_tag:
     displayName: Name of multi-script tag
     type: STRING
+  naming_convention:
+    type: STRING
 tasks:
   - name: "init"
     description: Build information about interactive scene

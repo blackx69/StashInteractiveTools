@@ -6,9 +6,9 @@ import scss from 'rollup-plugin-scss';
 import terser from '@rollup/plugin-terser';
 import peerDepsExternal from 'rollup-plugin-peer-deps-external';
 import copy from 'rollup-plugin-copy';
+import json from '@rollup/plugin-json';
 
 import 'dotenv/config';
-import fg from 'fast-glob';
 
 const packageJson = require('./package.json');
 const plugins = [
@@ -17,6 +17,7 @@ const plugins = [
   commonjs(),
   typescript({ tsconfig: './tsconfig.json' }),
   terser(),
+  json(),
   copy({
     targets: [
       {
