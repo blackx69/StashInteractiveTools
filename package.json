@@ -6,7 +6,8 @@
   "type": "commonjs",
   "scripts": {
     "rollup": "rollup -c --bundleConfigAsCjs",
-    "release": "cross-env NODE_ENV=production yarn rollup"
+    "release": "cross-env NODE_ENV=production yarn rollup",
+    "importApiIndex": "rimraf SCRIPTAPIINDEX && openapi --exportSchemas true --input https://scripts01.handyfeeling.com/api/script/index/v0/spec --output SCRIPTAPIINDEX --name ScriptApiIndex --indent 4"
   },
   "dependencies": {
     "@apollo/client": "^3.8.10",
@@ -27,6 +28,7 @@
   "devDependencies": {
     "@eslint/compat": "^1.1.1",
     "@eslint/js": "^9.9.0",
+    "@rollup/plugin-json": "^6.1.0",
     "@rollup/plugin-commonjs": "^26.0.1",
     "@rollup/plugin-node-resolve": "^15.2.3",
     "@rollup/plugin-terser": "^0.4.4",
@@ -58,7 +60,9 @@
     "thehandy": "^1.0.3",
     "tslib": "^2.6.3",
     "typescript": "^5.5.4",
-    "typescript-eslint": "^8.1.0"
+    "typescript-eslint": "^8.1.0",
+    "openapi-typescript-codegen": "^0.23.0",
+    "rimraf": "^3.0.2"
   },
   "peerDependencies": {
     "@apollo/client": "^3.8.10",

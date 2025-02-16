@@ -1,7 +1,8 @@
 /* eslint-disable */
+
 declare namespace PluginApi {
-  const React: typeof import("react");
-  const ReactDOM: typeof import("react-dom");
+  const React: typeof import('react');
+  const ReactDOM: typeof import('react-dom');
   namespace GQL {
     const AddGalleryImagesDocument: { [key: string]: any };
     const AddTempDlnaipDocument: { [key: string]: any };
@@ -611,19 +612,19 @@ declare namespace PluginApi {
     function useVersionSuspenseQuery(...args: any[]): any;
   }
   namespace libraries {
-    const Apollo: typeof import("@apollo/client");
-    const Bootstrap: typeof import("react-bootstrap");
-    const FontAwesomeRegular: typeof import("@fortawesome/free-regular-svg-icons");
-    const FontAwesomeSolid: typeof import("@fortawesome/free-solid-svg-icons");
-    const Intl: typeof import("react-intl");
-    const Mousetrap: typeof import("mousetrap");
-    const videojs:typeof import('video.js')
+    const Apollo: typeof import('@apollo/client');
+    const Bootstrap: typeof import('react-bootstrap');
+    const FontAwesomeRegular: typeof import('@fortawesome/free-regular-svg-icons');
+    const FontAwesomeSolid: typeof import('@fortawesome/free-solid-svg-icons');
+    const Intl: typeof import('react-intl');
+    const Mousetrap: typeof import('mousetrap');
+    const videojs: typeof import('video.js');
 
     // @ts-expect-error
-    import { MousetrapStatic } from "mousetrap";
+    import { MousetrapStatic } from 'mousetrap';
     function MousetrapPause(mousetrap: MousetrapStatic): MousetrapStatic;
 
-    const ReactRouterDOM: typeof import("react-router-dom");
+    const ReactRouterDOM: typeof import('react-router-dom');
   }
   namespace loadableComponents {
     interface ISceneCardProps {
@@ -656,8 +657,8 @@ declare namespace PluginApi {
     TagLink: React.FC<any>;
     LoadingIndicator: React.FC<any>;
     Icon: React.FC<any>;
-    "MainNavBar.MenuItems": React.FC<any>;
-    "MainNavBar.UtilityItems": React.FC<any>;
+    'MainNavBar.MenuItems': React.FC<any>;
+    'MainNavBar.UtilityItems': React.FC<any>;
     PerformerSelect: React.FC<any>;
     PerformerIDSelect: React.FC<any>;
     TagSelect: React.FC<any>;
@@ -673,10 +674,10 @@ declare namespace PluginApi {
     DateInput: React.FC<any>;
     CountrySelect: React.FC<any>;
     FolderSelect: React.FC<any>;
-    "SceneCard.Popovers": React.FC<any>;
-    "SceneCard.Details": React.FC<any>;
-    "SceneCard.Overlays": React.FC<any>;
-    "SceneCard.Image": React.FC<any>;
+    'SceneCard.Popovers': React.FC<any>;
+    'SceneCard.Details': React.FC<any>;
+    'SceneCard.Overlays': React.FC<any>;
+    'SceneCard.Image': React.FC<any>;
     PluginSettings: React.FC<any>;
     Setting: React.FC<any>;
     SettingGroup: React.FC<any>;
@@ -971,7 +972,7 @@ declare namespace PluginApi {
     }
     type AsyncVoid = Promise<void>;
 
-    import type Handy from "thehandy";
+    import type Handy from 'thehandy';
     export type InteractiveAPI = {
       _connected: boolean;
       _playing: boolean;
@@ -1016,14 +1017,14 @@ declare namespace PluginApi {
   }
 }
 
-declare module "mousetrap-pause" {
-  import { MousetrapStatic } from "mousetrap";
+declare module 'mousetrap-pause' {
+  import { MousetrapStatic } from 'mousetrap';
 
   function MousetrapPause(mousetrap: MousetrapStatic): MousetrapStatic;
 
   export default MousetrapPause;
 
-  module "mousetrap" {
+  module 'mousetrap' {
     interface MousetrapStatic {
       pause(): void;
       unpause(): void;

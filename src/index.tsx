@@ -18,7 +18,8 @@ import Funscripts, { Script } from './Funscripts';
 import StrokeSlider from './StrokeSlider';
 import SyncSlider from './SyncSlider';
 import { Action, FunscriptMetadata } from 'funscript-utils/src/types';
-import { GQL, hooks, patch, React } from './api';
+import { GQL, hooks, libraries, patch, React } from './api';
+import { deepMerge } from './deepMerge';
 
 interface SceneFileInfoPanelProps {
   scene: SceneDataFragment;
@@ -61,7 +62,7 @@ async function generateHeatmap(url: string) {
   FunMapper.renderHeatmap(canvas, script, {
     background: 'rgba(255,255, 255, 0)',
   });
-  replaceHeatMap(canvas.toDataURL('image/png'));
+  return canvas.toDataURL('image/png');
 }
 
 async function applyScriptChanges(url: string) {
@@ -88,12 +89,24 @@ function findScripts(
     JSON.parse(entry.message.replace(LOG_TAG, '').trim()) as LogMessage
   ).scripts?.reverse();
 }
+type ScenePaths = {
+  blobUrl?: string | null;
+  src?: string | null;
+  heatMap?: string | null;
+};
 
 const InteractiveTools = ({ scene }: SceneFileInfoPanelProps) => {
   const [entries, setEntries] = useState<Script[]>([]);
-  const [currentScript, setCurrentScript] = useState({
+  const [currentPaths, setCurrentPaths] = useState<ScenePaths>({
     blobUrl: scene.paths.funscript || '',
     src: scene.paths.funscript || '',
+    heatMap: scene.paths.interactive_heatmap,
+  });
+  const client = libraries.Apollo.useApolloClient();
+  const [defaultPaths] = useState<ScenePaths>({
+    blobUrl: scene.paths.funscript,
+    src: scene.paths.funscript,
+    heatMap: scene.paths.interactive_heatmap,
   });
   const { data: logs }: { data?: LoggingSubscribeSubscription } =
     GQL.useLoggingSubscribeSubscription();
@@ -112,20 +125,34 @@ const InteractiveTools = ({ scene }: SceneFileInfoPanelProps) => {
   const { uploadScript } = hooks.useInteractive();
   const onChange = useCallback(
     async (script: string) => {
-      const lastKnownScript = currentScript;
-      await applyScriptChanges(script);
+      let newPaths: ScenePaths = defaultPaths;
+      if (currentPaths.src !== script) {
+        const changes = await applyScriptChanges(script);
+        const heatMap = await generateHeatmap(changes.blobUrl);
+        newPaths = {
+          ...changes,
+          heatMap,
+        };
+      }
 
-      const newScript = await applyScriptChanges(script);
-      await generateHeatmap(newScript.blobUrl);
-      setCurrentScript(newScript);
-      await uploadScript(newScript.blobUrl).catch(() => {
-        if (scene.paths.interactive_heatmap) {
-          replaceHeatMap(scene.paths.interactive_heatmap);
-        }
-        setCurrentScript(lastKnownScript);
+      client.writeQuery({
+        query: GQL.FindSceneDocument,
+        data: {
+          findScene: deepMerge({}, scene, {
+            paths: {
+              funscript: newPaths.blobUrl,
+              interactive_heatmap: newPaths.heatMap,
+            },
+          }),
+        },
+        variables: {
+          id: scene.id,
+        },
       });
+
+      setCurrentPaths(newPaths);
     },
-    [setCurrentScript, uploadScript, currentScript, scene],
+    [setCurrentPaths, uploadScript, currentPaths, scene, client],
   );
 
   useEffect(() => {
@@ -146,8 +173,8 @@ const InteractiveTools = ({ scene }: SceneFileInfoPanelProps) => {
   return (
     <>
       <Funscripts
-        value={currentScript.src}
-        defaultScript={scene.paths.funscript || ''}
+        value={currentPaths.src || ''}
+        defaultScript={defaultPaths.src || ''}
         onChange={onChange}
         options={entries}
       />
