@@ -4,18 +4,18 @@
     width: 100%;
     height: 35px;
     text-align: center;
+
     div {
       position: absolute;
       top: 0.925rem;
       --tw-translate-x: -50%;
-      transform: translate(var(--tw-translate-x), var(--tw-translate-y))
-        rotate(var(--tw-rotate)) skew(var(--tw-skew-x)) skewY(var(--tw-skew-y))
-        scaleX(var(--tw-scale-x)) scaleY(var(--tw-scale-y));
+      transform: translate(var(--tw-translate-x), var(--tw-translate-y)) rotate(var(--tw-rotate)) skew(var(--tw-skew-x)) skewY(var(--tw-skew-y)) scaleX(var(--tw-scale-x)) scaleY(var(--tw-scale-y));
       cursor: pointer;
       --tw-text-opacity: 1;
       color: rgb(212 212 216 / var(--tw-text-opacity));
     }
   }
+
   .stroke-range {
     color: var(--grey);
     opacity: 0.5;
@@ -59,11 +59,13 @@
     background-color: rgba(0, 0, 0, 1);
     border: 0;
   }
+
   section.range-slider input:last-of-type::-moz-range-track {
     -moz-appearance: none;
     background: none transparent;
     border: 0;
   }
+
   section.range-slider input[type="range"]::-moz-focus-outer {
     border: 0;
   }

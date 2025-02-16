@@ -89,6 +89,7 @@ function findScripts(
     JSON.parse(entry.message.replace(LOG_TAG, '').trim()) as LogMessage
   ).scripts?.reverse();
 }
+
 type ScenePaths = {
   blobUrl?: string | null;
   src?: string | null;
