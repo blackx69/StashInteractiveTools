@@ -10,7 +10,6 @@ import json from '@rollup/plugin-json';
 
 import 'dotenv/config';
 
-const packageJson = require('./package.json');
 const plugins = [
   peerDepsExternal(),
   resolve(),
@@ -22,7 +21,7 @@ const plugins = [
     targets: [
       {
         src: 'assets/**',
-        dest: 'dist/cjs/',
+        dest: 'dist/',
       },
     ],
   }),
@@ -41,11 +40,13 @@ export default [
   if(name ==='video.js') return window.PluginApi.libraries.videojs;
 };
 `,
-        file: packageJson.main,
+        //file: packageJson.main,
+        dir: './dist',
         format: 'cjs',
-        sourcemap: process.env.NODE_ENV !== 'production',
-        sourcemapBaseUrl:
-          'http://localhost:9999/plugin/StashInteractiveTools/assets/',
+        sourcemap: !prod,
+        sourcemapBaseUrl: !prod
+          ? 'http://localhost:9999/plugin/StashInteractiveTools/assets/'
+          : '',
       },
     ],
     plugins,

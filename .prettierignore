@@ -3,6 +3,12 @@ node_modules
 .github
 .yarn
 .cache
+venv
+.husky
+dist
+.idea
+releases
+yarn.lock
 tmp
 
 /.nx/cache

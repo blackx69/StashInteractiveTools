@@ -1,10 +1,10 @@
-import globals from "globals";
-import eslint from "@eslint/js";
-import tseslint from "typescript-eslint";
-import { fixupPluginRules } from "@eslint/compat";
-import eslintPluginReact from "eslint-plugin-react";
-import eslintPluginPrettierRecommended from "eslint-plugin-prettier/recommended";
-import eslintPluginReactHooks from "eslint-plugin-react-hooks";
+import globals from 'globals';
+import eslint from '@eslint/js';
+import tseslint from 'typescript-eslint';
+import { fixupPluginRules } from '@eslint/compat';
+import eslintPluginReact from 'eslint-plugin-react';
+import eslintPluginPrettierRecommended from 'eslint-plugin-prettier/recommended';
+import eslintPluginReactHooks from 'eslint-plugin-react-hooks';
 
 export default tseslint
   .config(
@@ -21,7 +21,7 @@ export default tseslint
     {
       plugins: {
         react: eslintPluginReact,
-        "react-hooks": fixupPluginRules(eslintPluginReactHooks),
+        'react-hooks': fixupPluginRules(eslintPluginReactHooks),
       },
     },
     {
@@ -33,5 +33,5 @@ export default tseslint
   )
   .map((config) => ({
     ...config,
-    files: ["src/**/*.{js,mjs,cjs,ts,jsx,tsx}"],
+    files: ['src/**/*.{js,mjs,cjs,ts,jsx,tsx}'],
   }));

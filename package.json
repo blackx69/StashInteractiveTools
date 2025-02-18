@@ -7,7 +7,9 @@
   "scripts": {
     "rollup": "rollup -c --bundleConfigAsCjs",
     "release": "cross-env NODE_ENV=production yarn rollup",
-    "importApiIndex": "rimraf SCRIPTAPIINDEX && openapi --exportSchemas true --input https://scripts01.handyfeeling.com/api/script/index/v0/spec --output SCRIPTAPIINDEX --name ScriptApiIndex --indent 4"
+    "importApiIndex": "rimraf SCRIPTAPIINDEX && openapi --exportSchemas true --input https://scripts01.handyfeeling.com/api/script/index/v0/spec --output SCRIPTAPIINDEX --name ScriptApiIndex --indent 4",
+    "prepare": "husky",
+    "lint": "prettier . --write"
   },
   "dependencies": {
     "@apollo/client": "^3.8.10",
@@ -26,10 +28,12 @@
     "video.js": "^7.21.3"
   },
   "devDependencies": {
+    "@commitlint/cli": "^18.4.4",
+    "@commitlint/config-conventional": "^18.4.4",
     "@eslint/compat": "^1.1.1",
     "@eslint/js": "^9.9.0",
-    "@rollup/plugin-json": "^6.1.0",
     "@rollup/plugin-commonjs": "^26.0.1",
+    "@rollup/plugin-json": "^6.1.0",
     "@rollup/plugin-node-resolve": "^15.2.3",
     "@rollup/plugin-terser": "^0.4.4",
     "@rollup/plugin-typescript": "^11.1.6",
@@ -46,8 +50,11 @@
     "eslint-plugin-react": "^7.35.0",
     "eslint-plugin-react-hooks": "^4.6.2",
     "fast-glob": "^3.3.2",
+    "husky": "^9.1.7",
+    "openapi-typescript-codegen": "^0.23.0",
     "prettier": "^3.3.3",
     "react": "^18.3.1",
+    "rimraf": "^3.0.2",
     "rollup": "^4.20.0",
     "rollup-plugin-copy": "^3.5.0",
     "rollup-plugin-dts": "^6.1.1",
@@ -56,13 +63,12 @@
     "rollup-plugin-polyfill": "^4.2.0",
     "rollup-plugin-postcss": "^4.0.2",
     "rollup-plugin-scss": "3",
+    "rollup-plugin-zip": "^1.0.3",
     "sass": "^1.77.8",
     "thehandy": "^1.0.3",
     "tslib": "^2.6.3",
     "typescript": "^5.5.4",
-    "typescript-eslint": "^8.1.0",
-    "openapi-typescript-codegen": "^0.23.0",
-    "rimraf": "^3.0.2"
+    "typescript-eslint": "^8.1.0"
   },
   "peerDependencies": {
     "@apollo/client": "^3.8.10",
