@@ -7,9 +7,11 @@ import terser from '@rollup/plugin-terser';
 import peerDepsExternal from 'rollup-plugin-peer-deps-external';
 import copy from 'rollup-plugin-copy';
 import json from '@rollup/plugin-json';
+import zip from 'rollup-plugin-zip';
 
 import 'dotenv/config';
 
+const prod = process.env.NODE_ENV === 'production';
 const plugins = [
   peerDepsExternal(),
   resolve(),
@@ -25,12 +27,19 @@ const plugins = [
       },
     ],
   }),
-  scss({}), //
+  scss({
+    output: 'dist/index.css',
+  }), //
 ];
+
+if (prod) {
+  plugins.push(zip({ file: 'StashInteractiveTools.zip' }));
+}
 
 export default [
   {
     input: 'src/index.tsx',
+    cache: prod,
     output: [
       {
         banner: `window.require = function (name) {

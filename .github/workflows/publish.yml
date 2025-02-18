@@ -1,0 +1,27 @@
+name: Build and Plugin
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - 'develop'
+    tags:
+      - 'v*'
+
+jobs:
+  build:
+    name: Build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Setup Yarn
+        uses: actions/setup-node@v4
+        with:
+          node-version: 18
+          cache: yarn
+      - name: Install deps
+        run: yarn install
+      - name: Build
+        run: yarn release
+

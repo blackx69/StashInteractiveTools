@@ -130,4 +130,5 @@ dist
 .pnp.*
 .idea/
 assets/payload.json
-.idea/
+.idea
+
