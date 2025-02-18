@@ -9,7 +9,9 @@
       position: absolute;
       top: 0.925rem;
       --tw-translate-x: -50%;
-      transform: translate(var(--tw-translate-x), var(--tw-translate-y)) rotate(var(--tw-rotate)) skew(var(--tw-skew-x)) skewY(var(--tw-skew-y)) scaleX(var(--tw-scale-x)) scaleY(var(--tw-scale-y));
+      transform: translate(var(--tw-translate-x), var(--tw-translate-y))
+        rotate(var(--tw-rotate)) skew(var(--tw-skew-x)) skewY(var(--tw-skew-y))
+        scaleX(var(--tw-scale-x)) scaleY(var(--tw-scale-y));
       cursor: pointer;
       --tw-text-opacity: 1;
       color: rgb(212 212 216 / var(--tw-text-opacity));
@@ -22,7 +24,6 @@
     margin-left: 0.25em;
     font-weight: normal;
     display: block;
-
   }
 
   section.range-slider input {
@@ -66,7 +67,7 @@
     border: 0;
   }
 
-  section.range-slider input[type="range"]::-moz-focus-outer {
+  section.range-slider input[type='range']::-moz-focus-outer {
     border: 0;
   }
 }

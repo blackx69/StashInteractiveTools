@@ -42,14 +42,26 @@ module.exports = {
   prepare: async (pluginConfig, context) => {
     const { cwd, nextRelease, options, logger } = context;
 
-    const zipFile = path.resolve(cwd, 'StashInteractiveTools.zip');
+    const zipFile = path.resolve(cwd, 'dist', 'StashInteractiveTools.zip');
 
-    const versionedZipFile = `StashInteractiveTools-${nextRelease.version}.zip`;
-    const downloadUrl = `${options.repositoryUrl}/releases/download/${nextRelease.gitTag}/${versionedZipFile}`;
-    logger.info(`Renaming ${zipFile} to ${versionedZipFile}`);
+    const versionedZipFileName = `StashInteractiveTools-${nextRelease.version}.zip`;
+    const downloadUrl = `${options.repositoryUrl}/releases/download/${nextRelease.gitTag}/${versionedZipFileName}`;
+    const versionedZipFilePath = path.resolve(
+      cwd,
+      'dist',
+      versionedZipFileName,
+    );
+    logger.info(`Renaming ${zipFile} to ${versionedZipFilePath}`);
     if (!options.dryRun) {
-      renameSync(zipFile, path.resolve(cwd, versionedZipFile));
+      renameSync(zipFile, versionedZipFilePath);
     }
+    const githubPluginSpec = options.plugins?.find(
+      (p) => Array.isArray(p) && p[0] === '@semantic-release/github',
+    );
+    if (!githubPluginSpec) {
+      throw new Error('Could not find @semantic-release/github plugin');
+    }
+    githubPluginSpec[1].assets = [versionedZipFilePath];
     const stashContents = {
       id: 'StashInteractiveTools',
       name: 'Stash Interactive Tools',
