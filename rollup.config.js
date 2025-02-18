@@ -8,8 +8,28 @@ import peerDepsExternal from 'rollup-plugin-peer-deps-external';
 import copy from 'rollup-plugin-copy';
 import json from '@rollup/plugin-json';
 import zip from 'rollup-plugin-zip';
+import fs from 'fs';
+import path from 'path';
 
 import 'dotenv/config';
+
+const ASSETS_TO_OMIT = ['payload.json'];
+function emitAssets(assetsDir) {
+  return {
+    name: 'mark-assets',
+    buildStart() {
+      const files = fs.readdirSync(assetsDir);
+      for (const file of files) {
+        if (ASSETS_TO_OMIT.includes(file)) continue;
+        this.emitFile({
+          type: 'asset',
+          source: fs.readFileSync(path.join(assetsDir, file)),
+          fileName: file,
+        });
+      }
+    },
+  };
+}
 
 const prod = process.env.NODE_ENV === 'production';
 const plugins = [
@@ -22,14 +42,17 @@ const plugins = [
   copy({
     targets: [
       {
-        src: 'assets/**',
+        src: ['assets/**', '!assets/payload.json'],
+
         dest: 'dist/',
       },
     ],
   }),
   scss({
-    output: 'dist/index.css',
+    name: 'index.css',
+    fileName: 'index.css',
   }), //
+  emitAssets('assets'),
 ];
 
 if (prod) {

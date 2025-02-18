@@ -1,5 +1,11 @@
 const path = require('path');
-const { writeFile, createReadStream, renameSync } = require('fs-extra');
+const {
+  writeFile,
+  createReadStream,
+  renameSync,
+  existsSync,
+  unlinkSync,
+} = require('fs-extra');
 const { createHash } = require('crypto');
 
 const YAML = require('yaml');
@@ -32,6 +38,8 @@ async function getFileSha256(filePath) {
   });
 }
 
+const BASE_DOWNLOAD_URL =
+  'https://github.com/blackx69/StashInteractiveTools/releases/download/';
 module.exports = {
   /**
    *
@@ -45,7 +53,7 @@ module.exports = {
     const zipFile = path.resolve(cwd, 'dist', 'StashInteractiveTools.zip');
 
     const versionedZipFileName = `StashInteractiveTools-${nextRelease.version}.zip`;
-    const downloadUrl = `${options.repositoryUrl}/releases/download/${nextRelease.gitTag}/${versionedZipFileName}`;
+    const downloadUrl = `${BASE_DOWNLOAD_URL}${nextRelease.gitTag}/${versionedZipFileName}`;
     const versionedZipFilePath = path.resolve(
       cwd,
       'dist',
@@ -53,15 +61,12 @@ module.exports = {
     );
     logger.info(`Renaming ${zipFile} to ${versionedZipFilePath}`);
     if (!options.dryRun) {
+      if (existsSync(versionedZipFilePath)) {
+        unlinkSync(versionedZipFilePath);
+      }
       renameSync(zipFile, versionedZipFilePath);
     }
-    const githubPluginSpec = options.plugins?.find(
-      (p) => Array.isArray(p) && p[0] === '@semantic-release/github',
-    );
-    if (!githubPluginSpec) {
-      throw new Error('Could not find @semantic-release/github plugin');
-    }
-    githubPluginSpec[1].assets = [versionedZipFilePath];
+
     const stashContents = {
       id: 'StashInteractiveTools',
       name: 'Stash Interactive Tools',
@@ -71,7 +76,7 @@ module.exports = {
       version: nextRelease.version,
       date: getCurrentDate(),
       path: downloadUrl,
-      sha256: getFileSha256(path.resolve(cwd)),
+      sha256: await getFileSha256(versionedZipFilePath),
     };
 
     logger.info(
@@ -80,7 +85,7 @@ module.exports = {
     if (!options.dryRun) {
       await writeFile(
         path.resolve(cwd, 'stash.yml'),
-        YAML.stringify(stashContents),
+        YAML.stringify([stashContents]),
       );
     }
   },

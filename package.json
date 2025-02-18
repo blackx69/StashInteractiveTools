@@ -1,13 +1,8 @@
 {
   "name": "stash-interactive-tools",
-  "version": "0.0.1",
   "license": "MIT",
   "main": "dist/cjs/index.js",
   "type": "commonjs",
-  "repository": {
-    "type": "git",
-    "url": "git@github.com:blackx69/StashInteractiveTools.git"
-  },
   "scripts": {
     "rollup": "rollup -c --bundleConfigAsCjs",
     "release": "cross-env NODE_ENV=production yarn rollup",
@@ -42,6 +37,7 @@
     "@semantic-release/release-notes-generator": "^14.0.3",
     "@semantic-release/changelog": "^6.0.3",
     "@semantic-release/github": "^11.0.1",
+    "@semantic-release/git": "^10.0.1",
     "@eslint/compat": "^1.1.1",
     "@eslint/js": "^9.9.0",
     "@rollup/plugin-commonjs": "^26.0.1",
@@ -75,7 +71,7 @@
     "rollup-plugin-peer-deps-external": "^2.2.4",
     "rollup-plugin-polyfill": "^4.2.0",
     "rollup-plugin-postcss": "^4.0.2",
-    "rollup-plugin-scss": "3",
+    "rollup-plugin-scss": "^4.0.1",
     "rollup-plugin-zip": "^1.0.3",
     "sass": "^1.77.8",
     "thehandy": "^1.0.3",
