@@ -1,0 +1,8 @@
+- id: StashInteractiveTools
+  name: Stash Interactive Tools
+  metadata:
+    description: Enhance your Stash Interactive experience
+  version: 1.0.0-next.1
+  date: 2025-02-18 18:17:41
+  path: https://github.com/blackx69/StashInteractiveTools/releases/download/v1.0.0-next.1/StashInteractiveTools-1.0.0-next.1.zip
+  sha256: 1e1c7fc436c83391ab476b0a4066cbc58705e412dc6bda40652b382309cf7aa0
