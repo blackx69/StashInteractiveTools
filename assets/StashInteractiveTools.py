@@ -8,6 +8,7 @@ import traceback
 import urllib.parse
 from datetime import datetime
 from pathlib import Path
+import glob
 
 import stashapi.log as log
 from stashapi.stashapp import StashInterface
@@ -18,19 +19,23 @@ stash: StashInterface
 PLUGIN_DIR = ''
 PLUGIN_HTTP_ASSETS_PATH = ''
 FRAGMENT = {}
-
+PAYLOAD_FILE = os.path.join(os.path.dirname(os.path.realpath(__file__)),'payload.json')
 
 def init():
     global stash, PLUGIN_DIR, PLUGIN_HTTP_ASSETS_PATH, FRAGMENT
     mode = 'init'
     if DEBUG or os.environ.get('STASH_INTERACTIVE_TOOLS_DEBUG'):
-        f = open('./payload.json')
-        FRAGMENT = json.load(f)
-        f.close()
+        handle = open(PAYLOAD_FILE)
+        FRAGMENT = json.load(handle)
+        handle.close()
 
     else:
         FRAGMENT = json.loads(sys.stdin.read())
         mode = FRAGMENT["args"]["mode"]
+        #handle = open(PAYLOAD_FILE,'w+')
+        #handle.write(json.dumps(FRAGMENT))
+        #log.debug(json.dumps(FRAGMENT))
+        #handle.close()
 
     stash = StashInterface(FRAGMENT["server_connection"])
     PLUGIN_DIR = FRAGMENT["server_connection"]['PluginDir']
@@ -104,7 +109,8 @@ def get_funscripts(file):
     filename = os.path.basename(file)
     file_dir = Path(os.path.dirname(file))
     name = os.path.splitext(filename)[0]
-    files = list(file_dir.glob(f'{name}*.funscript'))
+    name_escaped = glob.escape(name)
+    files = list(file_dir.glob(f'{name_escaped}*.funscript'))
     return list(filter(lambda f: filter_out_false_versions(name, f), files))
 
 
@@ -189,12 +195,13 @@ def main():
         log.exit()
 
 
+log.debug(__name__)
 if __name__ == "__main__":
     try:
         main()
     except Exception as e:
         f = open(
-            'error-{}.json'.format(datetime.now().strftime("%Y%m%d-%H%M%S")),
+            './error-{}.json'.format(datetime.now().strftime("%Y%m%d-%H%M%S")),
             'w+')
         if isinstance(FRAGMENT, dict):
             f.write(json.dumps(FRAGMENT['args']))
