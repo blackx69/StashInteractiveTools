@@ -197,6 +197,6 @@ if __name__ == "__main__":
             'error-{}.json'.format(datetime.now().strftime("%Y%m%d-%H%M%S")),
             'w+')
         if isinstance(FRAGMENT, dict):
-            f.write(FRAGMENT['args'])
+            f.write(json.dumps(FRAGMENT['args']))
         f.write(traceback.format_exc())
         f.close()
