@@ -1,3 +1,10 @@
+# [1.0.0-next.3](github.com/blackx69/StashInteractiveTools/compare/v1.0.0-next.2...v1.0.0-next.3) (2025-02-20)
+
+
+### Bug Fixes
+
+* name is now escaped when trying to find other funscripts ([0a1d901](github.com/blackx69/StashInteractiveTools/commit/0a1d901ddf6feff3bb2ade74535a49aa0dcb4083))
+
 # [1.0.0-next.2](github.com/blackx69/StashInteractiveTools/compare/v1.0.0-next.1...v1.0.0-next.2) (2025-02-20)
 
 
