@@ -1,3 +1,10 @@
+# [1.0.0-next.2](github.com/blackx69/StashInteractiveTools/compare/v1.0.0-next.1...v1.0.0-next.2) (2025-02-20)
+
+
+### Bug Fixes
+
+* updated error log writing ([d6d9ccf](github.com/blackx69/StashInteractiveTools/commit/d6d9ccf11392dd23adf235f214a7d0fb2f8085cd))
+
 # 1.0.0-next.1 (2025-02-19)
 
 
