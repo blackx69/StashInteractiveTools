@@ -32,10 +32,10 @@ def init():
     else:
         FRAGMENT = json.loads(sys.stdin.read())
         mode = FRAGMENT["args"]["mode"]
-        #handle = open(PAYLOAD_FILE,'w+')
-        #handle.write(json.dumps(FRAGMENT))
-        #log.debug(json.dumps(FRAGMENT))
-        #handle.close()
+        handle = open(PAYLOAD_FILE,'w+')
+        handle.write(json.dumps(FRAGMENT))
+        log.debug(json.dumps(FRAGMENT))
+        handle.close()
 
     stash = StashInterface(FRAGMENT["server_connection"])
     PLUGIN_DIR = FRAGMENT["server_connection"]['PluginDir']
@@ -105,6 +105,8 @@ def filter_out_false_versions(base_name, file):
             return False
     return True
 
+def deterministic_sort_scripts(scripts):
+    return sorted(scripts, key=lambda x: (x['label'] != 'Default', x['label']))
 
 def get_funscripts(file):
     filename = os.path.basename(file)
@@ -117,7 +119,7 @@ def get_funscripts(file):
 
 def analyze_file(file, scene_id):
     files = get_funscripts(file)
-    return list(map(lambda script: map_script(script, file, scene_id), files))
+    return deterministic_sort_scripts(list(map(lambda script: map_script(script, file, scene_id), files)))
 
 
 def analyze_scene():
@@ -189,14 +191,12 @@ def main():
     # Only run 'init' when a scene id has been passed
     if mode == 'init' and 'scene_id' in FRAGMENT['args']:
         scripts = analyze_scene()
-        log.debug({'scripts': scripts})
-        log.exit()
+        log.exit({'scripts': scripts})
     elif mode == 'tag':
         tag_scenes()
         log.exit()
 
 
-log.debug(__name__)
 if __name__ == "__main__":
     try:
         main()

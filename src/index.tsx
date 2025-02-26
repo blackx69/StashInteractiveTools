@@ -1,9 +1,8 @@
 import './style.scss';
 import { FunMapper } from 'funscript-utils';
 import {
-  LoggingSubscribeSubscription,
-  RunPluginTaskMutationHookResult,
   SceneDataFragment,
+  useRunPluginOperationMutation,
 } from './generated-graphql';
 import {
   cloneElement,
@@ -24,12 +23,6 @@ import { deepMerge } from './deepMerge';
 interface SceneFileInfoPanelProps {
   scene: SceneDataFragment;
 }
-
-const LOG_TAG = '[Plugin / Stash Interactive Tools]';
-
-export type LogMessage = {
-  scripts: Script[];
-};
 
 const canvas = document.createElement('canvas');
 canvas.width = 1280;
@@ -78,6 +71,7 @@ async function applyScriptChanges(url: string) {
   };
 }
 
+/*
 function findScripts(
   entries: LoggingSubscribeSubscription['loggingSubscribe'],
 ) {
@@ -88,7 +82,7 @@ function findScripts(
   return (
     JSON.parse(entry.message.replace(LOG_TAG, '').trim()) as LogMessage
   ).scripts?.reverse();
-}
+}    */
 
 type ScenePaths = {
   blobUrl?: string | null;
@@ -109,20 +103,10 @@ const InteractiveTools = ({ scene }: SceneFileInfoPanelProps) => {
     src: scene.paths.funscript,
     heatMap: scene.paths.interactive_heatmap,
   });
-  const { data: logs }: { data?: LoggingSubscribeSubscription } =
-    GQL.useLoggingSubscribeSubscription();
 
-  const [runPluginTaskMutation]: RunPluginTaskMutationHookResult =
-    GQL.useRunPluginTaskMutation({
-      variables: {
-        plugin_id: 'StashInteractiveTools',
-        task_name: 'init',
-        args_map: {
-          scene_id: scene.id,
-          hostname: window.location.hostname,
-        },
-      },
-    });
+  const [findScripts, { data }] = useRunPluginOperationMutation<{
+    scripts: Script[];
+  }>();
 
   const { uploadScript } = hooks.useInteractive();
   const onChange = useCallback(
@@ -161,16 +145,21 @@ const InteractiveTools = ({ scene }: SceneFileInfoPanelProps) => {
     if (scene.paths.interactive_heatmap) {
       replaceHeatMap(scene.paths.interactive_heatmap);
     }
-    runPluginTaskMutation().catch(console.error);
-  }, [runPluginTaskMutation, scene]);
+    findScripts({
+      variables: {
+        plugin_id: 'StashInteractiveTools',
+        args: {
+          mode: 'init',
+          scene_id: scene.id,
+          hostname: window.location.hostname,
+        },
+      },
+    }).catch(console.error);
+  }, [findScripts, scene]);
 
   useEffect(() => {
-    if (!logs) return;
-    const scripts = findScripts(logs.loggingSubscribe);
-    if (!scripts) return;
-
-    setEntries(scripts);
-  }, [logs, setEntries]);
+    setEntries(data?.runPluginOperation?.scripts ?? []);
+  }, [data]);
 
   return (
     <>

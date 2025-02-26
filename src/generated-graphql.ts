@@ -1,8 +1,12 @@
 /* eslint-disable */
+import { Apollo, gql } from './api';
 import type {
   MutationResult,
   MutationTuple,
   QueryResult,
+  MutationHookOptions,
+  BaseMutationOptions,
+  MutationFunction,
 } from '@apollo/client/react/types/types';
 
 export type Maybe<T> = T | null;
@@ -16901,3 +16905,63 @@ export type ScanCompleteSubscribeSubscription = {
   __typename?: 'Subscription';
   scanCompleteSubscribe: boolean;
 };
+
+export const RunPluginOperationDocument = gql`
+  mutation RunPluginOperation($plugin_id: ID!, $args: Map) {
+    runPluginOperation(plugin_id: $plugin_id, args: $args)
+  }
+`;
+
+export type RunPluginOperationMutation<T = unknown | null> = {
+  __typename?: 'Mutation';
+  runPluginOperation?: T;
+};
+export type RunPluginOperationMutationVariables = Exact<{
+  plugin_id: Scalars['ID']['input'];
+  args?: InputMaybe<Scalars['Map']['input']>;
+}>;
+
+export type RunPluginOperationMutationFn<T = unknown | null> = MutationFunction<
+  RunPluginOperationMutation<T>,
+  RunPluginOperationMutationVariables
+>;
+
+/**
+ * __useRunPluginOperationMutation__
+ *
+ * To run a mutation, you first call `useRunPluginOperationMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useRunPluginOperationMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [runPluginOperationMutation, { data, loading, error }] = useRunPluginOperationMutation({
+ *   variables: {
+ *      plugin_id: // value for 'plugin_id'
+ *      args: // value for 'args'
+ *   },
+ * });
+ */
+export function useRunPluginOperationMutation<T>(
+  baseOptions?: MutationHookOptions<
+    RunPluginOperationMutation<T>,
+    RunPluginOperationMutationVariables
+  >,
+) {
+  const options = { ...defaultOptions, ...baseOptions };
+  return Apollo.useMutation<
+    RunPluginOperationMutation<T>,
+    RunPluginOperationMutationVariables
+  >(RunPluginOperationDocument, options);
+}
+export type RunPluginOperationMutationHookResult = ReturnType<
+  typeof useRunPluginOperationMutation
+>;
+export type RunPluginOperationMutationResult =
+  MutationResult<RunPluginOperationMutation>;
+export type RunPluginOperationMutationOptions = BaseMutationOptions<
+  RunPluginOperationMutation,
+  RunPluginOperationMutationVariables
+>;
