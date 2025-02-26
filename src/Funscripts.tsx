@@ -1,4 +1,4 @@
-import { ChangeEventHandler, useCallback } from 'react';
+import { ChangeEventHandler, useCallback, useState } from 'react';
 import { libraries, React } from './api';
 
 const fullWidthProps = {
@@ -26,11 +26,13 @@ type Props = {
 };
 
 const Funscripts = ({ value, onChange, options, defaultScript }: Props) => {
+  const [selected, setSelected] = useState(value || defaultScript);
   const onInternalChange: ChangeEventHandler<HTMLSelectElement> = useCallback(
     async (e) => {
+      setSelected(e.target.value);
       await onChange(e.target.value);
     },
-    [onChange],
+    [onChange, setSelected],
   );
   return (
     <>
@@ -47,7 +49,8 @@ const Funscripts = ({ value, onChange, options, defaultScript }: Props) => {
             id="stash-interactive-tools-select-funscripts"
             className="input-control"
             {...fullWidthProps.fieldProps}
-            defaultValue={value}
+            value={selected}
+            defaultValue={selected}
             onChange={onInternalChange}
           >
             {!options.length && (

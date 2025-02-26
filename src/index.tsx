@@ -161,6 +161,7 @@ const InteractiveTools = ({ scene }: SceneFileInfoPanelProps) => {
     setEntries(data?.runPluginOperation?.scripts ?? []);
   }, [data]);
 
+  console.log('currentPath', currentPaths.src);
   return (
     <>
       <Funscripts
