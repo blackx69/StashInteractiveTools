@@ -40,7 +40,8 @@ def init():
     stash = StashInterface(FRAGMENT["server_connection"])
     PLUGIN_DIR = FRAGMENT["server_connection"]['PluginDir']
     PLUGIN_HTTP_ASSETS_PATH = stash.url.replace('/graphql',
-                                                '/plugin/StashInteractiveTools/assets')
+                                                '/plugin/StashInteractiveTools/assets').replace("127.0.0.1", FRAGMENT["args"].get("hostname",'127.0.0.1'))
+
     return mode
 
 

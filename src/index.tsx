@@ -119,6 +119,7 @@ const InteractiveTools = ({ scene }: SceneFileInfoPanelProps) => {
         task_name: 'init',
         args_map: {
           scene_id: scene.id,
+          hostname: window.location.hostname,
         },
       },
     });

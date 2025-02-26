@@ -8,7 +8,8 @@
     "release": "cross-env NODE_ENV=production yarn rollup",
     "importApiIndex": "rimraf SCRIPTAPIINDEX && openapi --exportSchemas true --input https://scripts01.handyfeeling.com/api/script/index/v0/spec --output SCRIPTAPIINDEX --name ScriptApiIndex --indent 4",
     "prepare": "husky",
-    "lint": "prettier . --write"
+    "lint": "prettier . --write",
+    "local-release": "yarn release && cross-env CI=true HUSKY=0 semantic-release"
   },
   "dependencies": {
     "@apollo/client": "^3.8.10",
