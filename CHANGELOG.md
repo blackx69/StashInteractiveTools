@@ -1,3 +1,10 @@
+# [1.0.0-next.6](github.com/blackx69/StashInteractiveTools/compare/v1.0.0-next.5...v1.0.0-next.6) (2025-02-26)
+
+
+### Bug Fixes
+
+* dropdown selection ([0e7404e](github.com/blackx69/StashInteractiveTools/commit/0e7404ea5af55e94f079e4f8f46c782419cc491b))
+
 # [1.0.0-next.5](github.com/blackx69/StashInteractiveTools/compare/v1.0.0-next.4...v1.0.0-next.5) (2025-02-26)
 
 
