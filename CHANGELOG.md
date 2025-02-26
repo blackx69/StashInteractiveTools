@@ -1,3 +1,10 @@
+# [1.0.0-next.5](github.com/blackx69/StashInteractiveTools/compare/v1.0.0-next.4...v1.0.0-next.5) (2025-02-26)
+
+
+### Bug Fixes
+
+* ensure that `Default` script is always first and refactored script finding ([27b4e08](github.com/blackx69/StashInteractiveTools/commit/27b4e0842b0d3ad694eb93794a46ef3cb962b413))
+
 # [1.0.0-next.4](github.com/blackx69/StashInteractiveTools/compare/v1.0.0-next.3...v1.0.0-next.4) (2025-02-26)
 
 
