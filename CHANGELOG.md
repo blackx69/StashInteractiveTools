@@ -1,3 +1,10 @@
+# [1.0.0-next.4](github.com/blackx69/StashInteractiveTools/compare/v1.0.0-next.3...v1.0.0-next.4) (2025-02-26)
+
+
+### Bug Fixes
+
+* replace plugin assets url with viewing hostname ([145a800](github.com/blackx69/StashInteractiveTools/commit/145a800521e987ea87d18c5547e8154092cc130a))
+
 # [1.0.0-next.3](github.com/blackx69/StashInteractiveTools/compare/v1.0.0-next.2...v1.0.0-next.3) (2025-02-20)
 
 
