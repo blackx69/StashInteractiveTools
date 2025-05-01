@@ -10,6 +10,7 @@ import json from '@rollup/plugin-json';
 import zip from 'rollup-plugin-zip';
 import fs from 'fs';
 import path from 'path';
+import strip from '@rollup/plugin-strip';
 
 import 'dotenv/config';
 
@@ -18,15 +19,28 @@ function emitAssets(assetsDir) {
   return {
     name: 'mark-assets',
     buildStart() {
-      const files = fs.readdirSync(assetsDir);
-      for (const file of files) {
-        if (ASSETS_TO_OMIT.includes(file)) continue;
-        this.emitFile({
-          type: 'asset',
-          source: fs.readFileSync(path.join(assetsDir, file)),
-          fileName: file,
-        });
-      }
+      const walk = (dir) => {
+        const entries = fs.readdirSync(dir, { withFileTypes: true });
+
+        for (const entry of entries) {
+          const fullPath = path.join(dir, entry.name);
+
+          if (ASSETS_TO_OMIT.includes(entry.name)) continue;
+
+          if (entry.isDirectory()) {
+            walk(fullPath);
+          } else {
+            const relativePath = path.relative(assetsDir, fullPath);
+            this.emitFile({
+              type: 'asset',
+              source: fs.readFileSync(fullPath),
+              fileName: relativePath, // preserve folder structure
+            });
+          }
+        }
+      };
+
+      walk(assetsDir);
     },
   };
 }
@@ -42,9 +56,13 @@ const plugins = [
   copy({
     targets: [
       {
-        src: ['assets/**', '!assets/payload.json'],
+        src: ['assets/**', '!assets/payload.json', '!assets/tasks'],
 
         dest: 'dist/',
+      },
+      {
+        src: ['assets/tasks/**'],
+        dest: 'dist/tasks',
       },
     ],
   }),
@@ -57,6 +75,7 @@ const plugins = [
 
 if (prod) {
   plugins.push(zip({ file: 'StashInteractiveTools.zip' }));
+  plugins.push(strip({}));
 }
 
 export default [

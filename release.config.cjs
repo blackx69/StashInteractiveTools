@@ -1,4 +1,7 @@
 require('dotenv').config();
+const prod = process.env.NODE_ENV === 'production';
+const stashFile = prod ? 'stash.yml' : 'stash-next.yml';
+const assets = prod ? ['./CHANGELOG.md', `./${stashFile}`] : [`./${stashFile}`];
 /**
  * @type {import('semantic-release').GlobalConfig}
  */
@@ -13,12 +16,12 @@ module.exports = {
     ],
     ['@semantic-release/release-notes-generator', { host: 'github.com' }],
     '@semantic-release/changelog',
-    './release.plugin.js',
+    ['./release.plugin.js', { stashFile }],
 
     [
       '@semantic-release/git',
       {
-        assets: ['./CHANGELOG.md', './stash.yml'],
+        assets,
         message:
           'chore(release): ${nextRelease.version} [skip ci]\n\n${nextRelease.notes}',
       },

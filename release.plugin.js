@@ -43,11 +43,11 @@ const BASE_DOWNLOAD_URL =
 module.exports = {
   /**
    *
-   * @param pluginConfig
+   * @param { {stashFile:string} } pluginConfig
    * @param {import('semantic-release').PrepareContext } context
    * @returns {Promise<void>}
    */
-  prepare: async (pluginConfig, context) => {
+  prepare: async ({ stashFile }, context) => {
     const { cwd, nextRelease, options, logger } = context;
 
     const zipFile = path.resolve(cwd, 'dist', 'StashInteractiveTools.zip');
@@ -84,7 +84,7 @@ module.exports = {
     );
     if (!options.dryRun) {
       await writeFile(
-        path.resolve(cwd, 'stash.yml'),
+        path.resolve(cwd, stashFile),
         YAML.stringify([stashContents]),
       );
     }
