@@ -28,6 +28,9 @@ settings:
     type: STRING
   naming_convention:
     type: STRING
+  alwaysDefaultToStashSyncOffset:
+    displayName: Always default to using the Stash configured server offset first
+    type: BOOLEAN
 tasks:
   - name: 'Install'
     description: Install all dependencies

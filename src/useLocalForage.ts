@@ -74,7 +74,10 @@ export function useLocalForage<T extends object>(
 export interface StashToolsConfig {
   syncOffset: number;
   useSavedOffset: boolean;
+  ready: boolean;
   slideInfo: SlideInfo;
+  alwaysDefaultToStashSyncOffset: boolean;
+  stashSyncOffset: number;
 }
 
 const LOCAL_FORAGE_KEY = 'StashInteractiveTools';
@@ -94,6 +97,10 @@ export const useStashToolsConfig = (): [
     {
       syncOffset: stashConfig?.configuration?.interface?.funscriptOffset ?? NaN,
       useSavedOffset: false,
+      alwaysDefaultToStashSyncOffset: false,
+      ready: false,
+      stashSyncOffset:
+        stashConfig?.configuration?.interface?.funscriptOffset ?? NaN,
       slideInfo: {
         min: 0,
         max: 100,
@@ -109,28 +116,22 @@ export const useStashToolsConfig = (): [
     if (!initialised) return;
     const shouldApply = !completed && stashConfig && data;
     if (shouldApply) {
-      let syncOffset = 0;
-      if (!Number.isNaN(data.syncOffset)) {
-        if (data.useSavedOffset) {
-          syncOffset = data.syncOffset;
-        }
-      } else if (stashConfig) {
-        syncOffset = stashConfig.configuration.interface.funscriptOffset ?? 0;
-      }
+      const pluginConfig =
+        stashConfig?.configuration.plugins['StashInteractiveTools'];
+      const alwaysDefaultToStashSyncOffset =
+        (pluginConfig.alwaysDefaultToStashSyncOffset as boolean) ?? false;
+      setConfig({
+        ...data,
+        ready: true,
+        alwaysDefaultToStashSyncOffset,
+      });
 
       setCompleted(true);
-      Promise.all([
-        configurInterfaceMutation({
-          variables: {
-            input: {
-              funscriptOffset: syncOffset,
-            },
-          },
-        }),
-        querySlideSettings(),
-      ]).catch(console.error);
+
+      querySlideSettings().catch(console.error);
     }
   }, [
+    setConfig,
     initialised,
     data,
     stashConfig,

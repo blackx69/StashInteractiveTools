@@ -36,7 +36,7 @@ export type SliderContext<T> = {
 export type SliderOnCommit<T> = (
   ctx: SliderContext<T>,
   nextValue?: T,
-) => Promise<T>;
+) => Promise<T> | Promise<[T, boolean?]>;
 
 export type SliderOnBeforeCommit<T> = (ctx: SliderContext<T>) => Promise<void>;
 export type SliderOnAfterCommit<T> = (ctx: SliderContext<T>) => Promise<void>;
@@ -89,15 +89,20 @@ const Slider = <T,>({
       config,
     };
     await onBeforeCommit?.(ctx);
-    const finalValue = await onCommit(ctx, nextValue);
-    setConfig((v) => ({
-      ...v,
-      [configName]: finalValue,
-    }));
+    const commitReturnValue = await onCommit(ctx, nextValue);
+    const [finalValue, shouldSaveToConfig] = Array.isArray(commitReturnValue)
+      ? commitReturnValue
+      : [commitReturnValue, true];
+    if (shouldSaveToConfig) {
+      setConfig((v) => ({
+        ...v,
+        [configName]: finalValue,
+      }));
+    }
 
     setCurrentValue(finalValue);
     await onAfterCommit?.(ctx);
-  }, 500);
+  }, 100);
   const onSliderChanged: ChangeEventHandler<HTMLInputElement> = useCallback(
     (e) => {
       const value = onChange(e);
@@ -115,23 +120,32 @@ const Slider = <T,>({
   }, [setCompleted, onCommitSyncChanges]);
 
   useEffect(() => {
-    if (initialised && isConfigLoaded && !completed) {
-      onInitialize();
-    }
-  }, [onInitialize, initialised, completed, isConfigLoaded]);
-
-  useEffect(() => {
-    if (!setup) return;
-    const ctx: SliderContext<T> = {
-      currentValue,
-      interactive,
-      interactiveSync,
-      withPlayer,
-      config,
+    if (!setup || !isConfigLoaded || !config.ready) return;
+    const tryInitialize = () => {
+      if (initialised && isConfigLoaded && !completed) {
+        onInitialize();
+      }
     };
-    onSetup?.(ctx, setCurrentValue);
-    setSetup(false);
+    if (setup) {
+      const ctx: SliderContext<T> = {
+        currentValue,
+        interactive,
+        interactiveSync,
+        withPlayer,
+        config,
+      };
+      onSetup?.(ctx, setCurrentValue).then(() => {
+        tryInitialize();
+      });
+      setSetup(false);
+    } else {
+      tryInitialize();
+    }
   }, [
+    onInitialize,
+    initialised,
+    completed,
+    isConfigLoaded,
     setup,
     onSetup,
     setSetup,

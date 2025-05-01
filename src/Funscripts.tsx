@@ -40,7 +40,7 @@ const Funscripts = ({ value, onChange, options, defaultScript }: Props) => {
         style={{ lineHeight: '2.5em' }}
         id="stash-interactive-tools-label-funscripts"
       >
-        Funscripts:
+        Scripts:
       </dt>
       <Row className="form-container" as="dd">
         <Col lg={11} xl={11}>

@@ -17,7 +17,7 @@ import Funscripts, { Script } from './Funscripts';
 import StrokeSlider from './StrokeSlider';
 import SyncSlider from './SyncSlider';
 import { Action, FunscriptMetadata } from 'funscript-utils/src/types';
-import { GQL, hooks, libraries, patch, React } from './api';
+import { GQL, libraries, patch, React } from './api';
 import { deepMerge } from './deepMerge';
 
 interface SceneFileInfoPanelProps {
@@ -108,7 +108,7 @@ const InteractiveTools = ({ scene }: SceneFileInfoPanelProps) => {
     scripts: Script[];
   }>();
 
-  const { uploadScript } = hooks.useInteractive();
+  //const { uploadScript } = hooks.useInteractive();
   const onChange = useCallback(
     async (script: string) => {
       let newPaths: ScenePaths = defaultPaths;
@@ -138,7 +138,7 @@ const InteractiveTools = ({ scene }: SceneFileInfoPanelProps) => {
 
       setCurrentPaths(newPaths);
     },
-    [setCurrentPaths, uploadScript, currentPaths, scene, client],
+    [setCurrentPaths, currentPaths, scene, client, defaultPaths],
   );
 
   useEffect(() => {
@@ -169,6 +169,7 @@ const InteractiveTools = ({ scene }: SceneFileInfoPanelProps) => {
         onChange={onChange}
         options={entries}
       />
+
       <StrokeSlider />
       <SyncSlider />
     </>

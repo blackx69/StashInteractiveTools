@@ -17,7 +17,10 @@ const onCommit = async (ctx: SliderContext<number>, nextValue?: number) => {
     setHstpOffset: (v: number) => Promise<unknown>;
   };
   await h.setHstpOffset(finalOffset);
-  return finalOffset;
+  return [finalOffset, !ctx.config.alwaysDefaultToStashSyncOffset] as [
+    number,
+    boolean,
+  ];
 };
 const onAfterCommit = (ctx: SliderContext<number>) => {
   return ctx.withPlayer(async () => {
@@ -29,7 +32,10 @@ const onAfterCommit = (ctx: SliderContext<number>) => {
 const onChange = (event: ChangeEvent<HTMLInputElement>) =>
   parseInt(event.target.value, 10);
 const onSetup: SliderOnSetup<number> = async (ctx, setValue) => {
-  const hstpOffset = await ctx.interactive._handy.getHstpOffset();
+  const hstpOffset = ctx.config.alwaysDefaultToStashSyncOffset
+    ? ctx.config.stashSyncOffset
+    : await ctx.interactive._handy.getHstpOffset();
+
   setValue(hstpOffset);
   const syncInterval = setInterval(async () => {
     ctx.interactive.setServerTimeOffset(
