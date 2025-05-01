@@ -60,48 +60,50 @@ const StrokeSlider = () => {
           {slideInfo.min}-{slideInfo.max}
         </span>
       </dt>
-      <dd>
-        <section className="range-slider">
-          <div className="ranger-slider-marker" style={{ left: 0 }}>
-            0
+      <dd className="form-container row">
+        <div className="range-slider col-xl-11 col-lg-11">
+          <div className="range-slider-wrapper">
+            <div className="range-slider-marker" style={{ left: 0 }}>
+              0
+            </div>
+            <div className="range-slider-marker" style={{ left: '25%' }}>
+              25
+            </div>
+            <div className="range-slider-marker" style={{ left: '50%' }}>
+              50
+            </div>
+            <div className="range-slider-marker" style={{ left: '75%' }}>
+              75
+            </div>
+            <div className="range-slider-marker" style={{ left: '94%' }}>
+              100
+            </div>
+            <Form.Control
+              as="input"
+              type="range"
+              name="min"
+              bsPrefix="form-range"
+              className="input-control"
+              value={slideInfo.min}
+              disabled={!initialised}
+              min={0}
+              max={100}
+              onChange={onSliderChanged}
+            />
+            <Form.Control
+              as="input"
+              type="range"
+              min={0}
+              max={100}
+              name="max"
+              disabled={!initialised}
+              onChange={onSliderChanged}
+              value={slideInfo.max}
+              bsPrefix="form-range"
+              className="input-control"
+            />
           </div>
-          <div className="ranger-slider-marker" style={{ left: '25%' }}>
-            25
-          </div>
-          <div className="ranger-slider-marker" style={{ left: '50%' }}>
-            50
-          </div>
-          <div className="ranger-slider-marker" style={{ left: '75%' }}>
-            75
-          </div>
-          <div className="ranger-slider-marker" style={{ left: '94%' }}>
-            100
-          </div>
-          <Form.Control
-            as="input"
-            type="range"
-            name="min"
-            bsPrefix="form-range"
-            className="input-control"
-            value={slideInfo.min}
-            disabled={!initialised}
-            min={0}
-            max={100}
-            onChange={onSliderChanged}
-          />
-          <Form.Control
-            as="input"
-            type="range"
-            min={0}
-            max={100}
-            name="max"
-            disabled={!initialised}
-            onChange={onSliderChanged}
-            value={slideInfo.max}
-            bsPrefix="form-range"
-            className="input-control"
-          />
-        </section>
+        </div>
       </dd>
     </>
   );

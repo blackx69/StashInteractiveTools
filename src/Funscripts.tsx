@@ -43,7 +43,7 @@ const Funscripts = ({ value, onChange, options, defaultScript }: Props) => {
         Funscripts:
       </dt>
       <Row className="form-container" as="dd">
-        <Col lg={7} xl={12}>
+        <Col lg={11} xl={11}>
           <Form.Control
             as="select"
             id="stash-interactive-tools-select-funscripts"

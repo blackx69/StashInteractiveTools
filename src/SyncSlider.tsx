@@ -55,36 +55,38 @@ const SyncSlider = () => {
           <dt>
             Sync: <span className="stroke-range">{currentValue}ms</span>
           </dt>
-          <dd>
-            <section className="range-slider">
-              <div className="ranger-slider-marker" style={{ left: 0 }}>
-                -250
+          <dd className="form-container row">
+            <div className="range-slider col-xl-11 col-lg-11">
+              <div className="range-slider-wrapper">
+                <div className="range-slider-marker" style={{ left: 0 }}>
+                  -250
+                </div>
+                <div className="range-slider-marker" style={{ left: '25%' }}>
+                  -125
+                </div>
+                <div className="range-slider-marker" style={{ left: '50%' }}>
+                  0
+                </div>
+                <div className="range-slider-marker" style={{ left: '75%' }}>
+                  125
+                </div>
+                <div className="range-slider-marker" style={{ left: '94%' }}>
+                  250
+                </div>
+                <Form.Control
+                  as="input"
+                  type="range"
+                  name="min"
+                  bsPrefix="form-range"
+                  className="input-control"
+                  value={currentValue}
+                  min={-250}
+                  max={250}
+                  disabled={!initialised}
+                  onChange={onSliderChanged}
+                />
               </div>
-              <div className="ranger-slider-marker" style={{ left: '25%' }}>
-                -125
-              </div>
-              <div className="ranger-slider-marker" style={{ left: '50%' }}>
-                0
-              </div>
-              <div className="ranger-slider-marker" style={{ left: '75%' }}>
-                125
-              </div>
-              <div className="ranger-slider-marker" style={{ left: '94%' }}>
-                250
-              </div>
-              <Form.Control
-                as="input"
-                type="range"
-                name="min"
-                bsPrefix="form-range"
-                className="input-control"
-                value={currentValue}
-                min={-250}
-                max={250}
-                disabled={!initialised}
-                onChange={onSliderChanged}
-              />
-            </section>
+            </div>
           </dd>
         </>
       )}
