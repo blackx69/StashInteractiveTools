@@ -29,6 +29,10 @@ settings:
   naming_convention:
     type: STRING
 tasks:
+  - name: 'Install'
+    description: Install all dependencies
+    defaultArgs:
+      mode: install
   - name: 'init'
     description: Build information about interactive scene
     defaultArgs:

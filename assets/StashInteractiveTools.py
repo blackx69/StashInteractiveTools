@@ -1,210 +1,32 @@
-import json
-import os
-import os.path
-import re
-import shutil
-import sys
 import traceback
-import urllib.parse
 from datetime import datetime
+from config import get_config
+import sys
 from pathlib import Path
-import glob
 
-import stashapi.log as log
-from stashapi.stashapp import StashInterface
-
-DEBUG = False
-ID = 'StashInteractiveTools'
-stash: StashInterface
-PLUGIN_DIR = ''
-PLUGIN_HTTP_ASSETS_PATH = ''
-FRAGMENT = {}
-PAYLOAD_FILE = os.path.join(os.path.dirname(os.path.realpath(__file__)),'payload.json')
-
-def init():
-    global stash, PLUGIN_DIR, PLUGIN_HTTP_ASSETS_PATH, FRAGMENT
-    mode = 'init'
-    if DEBUG or os.environ.get('STASH_INTERACTIVE_TOOLS_DEBUG'):
-        handle = open(PAYLOAD_FILE)
-        FRAGMENT = json.load(handle)
-        handle.close()
-
-    else:
-        FRAGMENT = json.loads(sys.stdin.read())
-        mode = FRAGMENT["args"]["mode"]
-        handle = open(PAYLOAD_FILE,'w+')
-        handle.write(json.dumps(FRAGMENT))
-        log.debug(json.dumps(FRAGMENT))
-        handle.close()
-
-    stash = StashInterface(FRAGMENT["server_connection"])
-    PLUGIN_DIR = FRAGMENT["server_connection"]['PluginDir']
-    PLUGIN_HTTP_ASSETS_PATH = stash.url.replace('/graphql',
-                                                '/plugin/StashInteractiveTools/assets').replace("127.0.0.1", FRAGMENT["args"].get("hostname",'127.0.0.1'))
-
-    return mode
-
-
-def fetch_config():
-    config = stash.find_plugin_config(ID)
-    enable = bool(config.get('enable_tagging'))
-    tag_name = config.get('multi_script_tag')
-    naming_convention = config.get('naming_convention')
-    if not tag_name:
-        tag_name = '[SIT: Multi-Script]'
-    return enable, tag_name, naming_convention
-
-
-
-ENABLE_TAGGING = False
-TAG_NAME = '[SIT: Multi-Script]'
-NAMING_CONVENTION = ''
-
-
-
-def parse_label_regex(script_filename, file_filename):
-    pass
-
-
-def parse_label_default(script_filename, file_filename):
-    same_name = script_filename == file_filename
-    label = 'Default' if same_name else script_filename.replace(
-        file_filename, '')
-    return re.sub(r'[()]', '', label).strip()
-
-
-def map_script(script, file, scene_id):
-    output = os.path.join(PLUGIN_DIR, '.scripts', scene_id)                                      # type: ignore
-    if not os.path.exists(output):
-        os.makedirs(output, exist_ok=True)
-
-    file_filename = os.path.splitext(os.path.basename(file))[0]
-    script_base_name = os.path.basename(script)
-    script_filename = os.path.splitext(script_base_name)[0]
-
-    shutil.copyfile(script, os.path.join(output, script_base_name))
-
-    path = f'{PLUGIN_HTTP_ASSETS_PATH}/.scripts/{scene_id}/{urllib.parse.quote(script_filename)}.funscript'
-    parser = parse_label_default if not NAMING_CONVENTION else parse_label_regex
-    label = parser(script_filename, file_filename)
-    return {'label': label, 'path': path}
-
-
-VIDEO_EXTENSIONS = ['mp4', 'mov', 'wmv', 'avi', 'mkv']
-
-
-def filter_out_false_versions(base_name, file):
-    file_dir = os.path.dirname(file)
-    name = os.path.splitext(os.path.basename(file))[0]
-    # keep
-    if name == base_name:
-        return True
-    for ext in VIDEO_EXTENSIONS:
-        to_check = os.path.join(file_dir, f'{name}.{ext}')
-        if os.path.exists(to_check):
-            return False
-    return True
-
-def deterministic_sort_scripts(scripts):
-    return sorted(scripts, key=lambda x: (x['label'] != 'Default', x['label']))
-
-def get_funscripts(file):
-    filename = os.path.basename(file)
-    file_dir = Path(os.path.dirname(file))
-    name = os.path.splitext(filename)[0]
-    name_escaped = glob.escape(name)
-    files = list(file_dir.glob(f'{name_escaped}*.funscript'))
-    return list(filter(lambda f: filter_out_false_versions(name, f), files))
-
-
-def analyze_file(file, scene_id):
-    files = get_funscripts(file)
-    return deterministic_sort_scripts(list(map(lambda script: map_script(script, file, scene_id), files)))
-
-
-def analyze_scene():
-    scene_id = FRAGMENT["args"]['scene_id']
-    scene = stash.find_scene(scene_id)
-    # log.info(json.dumps(scene))
-    if scene['interactive']:
-        return analyze_file(scene['files'][0]['path'], scene_id)
-    return []
-
-
-SCENE_FRAGMENT = """
-id
-tags { id }
-files {
- path
-}
-"""
-
-BULK_SCENE_UPDATE = "mutation BulkSceneUpdate($input: BulkSceneUpdateInput!) {\n  bulkSceneUpdate(input: $input) { id } } "
-
-
-def update_tags(ids, mode='ADD'):
-    tag_id = stash.find_tag(TAG_NAME, create=True).get('id')
-    stash.call_GQL(BULK_SCENE_UPDATE, {
-        'input': {'ids': ids,
-                  'tag_ids': {
-                      'mode': mode,
-                      'ids': [tag_id]
-                  }
-                  }
-    })
-
-
-def tag_scenes():
-    page = 1
-    total = -1
-    seen = 0
-    fetch_config()
-
-    while seen != total:
-        to_tag = []
-        total, scenes = stash.find_scenes({
-            'interactive': True
-        }, {
-            'page': page,
-            'per_page': 100,
-            'direction': 'DESC',
-            'sort': 'created_at'
-        }, "", SCENE_FRAGMENT, True)
-        seen += len(scenes)
-        log.debug(f'Processing {len(scenes)}')
-        if not len(scenes):
-            break
-        for scene in scenes:
-            file = scene['files'][0]['path']
-            log.debug(f'Scanning {file}')
-            if len(get_funscripts(file)) > 1:
-                to_tag.append(scene['id'])
-        if len(to_tag):
-            update_tags(to_tag)
-        page += 1
-
+sys.path.insert(0, str(Path(__file__).resolve().parent))
 
 def main():
-    global ENABLE_TAGGING, TAG_NAME,NAMING_CONVENTION
-    mode = init()
-    ENABLE_TAGGING,TAG_NAME,NAMING_CONVENTION = fetch_config()
-    # Only run 'init' when a scene id has been passed
-    if mode == 'init' and 'scene_id' in FRAGMENT['args']:
-        scripts = analyze_scene()
-        log.exit({'scripts': scripts})
-    elif mode == 'tag':
-        tag_scenes()
-        log.exit()
-
-
-if __name__ == "__main__":
+    config = get_config()
     try:
-        main()
-    except Exception as e:
+      task = config.get_task(config.mode)
+      if hasattr(task,'run'):
+          task.run(config)
+      else:
+          config.log.error(f"'run' function not found in module {config.mode}")
+    except Exception:
+        config.log.error(f"Task module '{config.mode}' not found.")
+        config.log.error(traceback.format_exc())
         f = open(
             './error-{}.json'.format(datetime.now().strftime("%Y%m%d-%H%M%S")),
             'w+')
-        if isinstance(FRAGMENT, dict):
-            f.write(json.dumps(FRAGMENT['args']))
         f.write(traceback.format_exc())
         f.close()
+
+
+
+
+if __name__ == "__main__":
+        main()
+
+
