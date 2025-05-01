@@ -8,7 +8,60 @@ const {
 } = require('fs-extra');
 const { createHash } = require('crypto');
 
+const CONFIGS = {
+  '@semantic-release/changelog': {
+    next: false,
+  },
+  '@semantic-release/git': {
+    common: {
+      message:
+        'chore(release): ${nextRelease.version} [skip ci]\n\n${nextRelease.notes}',
+    },
+    main: {
+      assets: ['./stash.yml'],
+    },
+    next: {
+      assets: ['./stash-next.yml'],
+    },
+  },
+};
+function wrapPlugin(name) {
+  const plugin = require(name);
+  Object.keys(plugin).forEach((methodName) => {
+    const defaultMethod = plugin[methodName];
+    /**
+     *
+     * @param config
+     * @param {import('semantic-release').PrepareContext } context
+     * @returns {Promise<void>}
+     */
+    plugin[methodName] = async (config, context) => {
+      const { branch, logger } = context;
+      const branchConfig = CONFIGS[name]?.[branch.name];
+      if (branchConfig === false) {
+        logger.info(
+          `${name}->${methodName} method is disabled when on branch=${branch.name}`,
+        );
+        // don't run for branch
+        return;
+      }
+      logger.info(`invoking ${name}->${methodName} method`);
+      config = {
+        ...config,
+        ...CONFIGS[methodName]?.common,
+        ...branchConfig,
+      };
+      await defaultMethod.apply(plugin, [config, context]);
+    };
+  });
+
+  return plugin;
+}
+
+const changelogPlugin = wrapPlugin('@semantic-release/changelog');
+const gitPlugin = wrapPlugin('@semantic-release/git');
 const YAML = require('yaml');
+
 function getCurrentDate() {
   const date = new Date();
   const pad = (num) => String(num).padStart(2, '0');
@@ -38,17 +91,13 @@ async function getFileSha256(filePath) {
   });
 }
 
-const BASE_DOWNLOAD_URL =
-  'https://github.com/blackx69/StashInteractiveTools/releases/download/';
-module.exports = {
-  /**
-   *
-   * @param { {stashFile:string} } pluginConfig
-   * @param {import('semantic-release').PrepareContext } context
-   * @returns {Promise<void>}
-   */
-  prepare: async ({ stashFile }, context) => {
+const zipPlugin = {
+  prepare: async (pluginConfig, context) => {
     const { cwd, nextRelease, options, logger } = context;
+    const stashFiles =
+      context.branch.name === 'main'
+        ? ['stash.yml']
+        : ['stash.yml', 'stash-next.yml'];
 
     const zipFile = path.resolve(cwd, 'dist', 'StashInteractiveTools.zip');
 
@@ -69,7 +118,7 @@ module.exports = {
 
     const stashContents = {
       id: 'StashInteractiveTools',
-      name: 'Stash Interactive Tools',
+      name: `Stash Interactive Tools (${context.branch.name})`,
       metadata: {
         description: 'Enhance your Stash Interactive experience',
       },
@@ -83,10 +132,36 @@ module.exports = {
       `Updated stash.yml \nversion:${stashContents.version}\npath:${downloadUrl}\n${stashContents.sha256}`,
     );
     if (!options.dryRun) {
-      await writeFile(
-        path.resolve(cwd, stashFile),
-        YAML.stringify([stashContents]),
+      await Promise.all(
+        stashFiles.map(async (stashFile) => {
+          await writeFile(
+            path.resolve(cwd, stashFile),
+            YAML.stringify([stashContents]),
+          );
+        }),
       );
+    } else {
+      logger.info();
     }
+  },
+};
+
+const BASE_DOWNLOAD_URL =
+  'https://github.com/blackx69/StashInteractiveTools/releases/download/';
+module.exports = {
+  verifyConditions: async (pluginConfig, context) => {
+    await changelogPlugin.verifyConditions(pluginConfig, context);
+    await gitPlugin.verifyConditions(pluginConfig, context);
+  },
+  /**
+   *
+   * @param { {stashFile:string} } pluginConfig
+   * @param {import('semantic-release').PrepareContext } context
+   * @returns {Promise<void>}
+   */
+  prepare: async (pluginConfig, context) => {
+    await changelogPlugin.prepare(pluginConfig, context);
+    await zipPlugin.prepare(pluginConfig, context);
+    await gitPlugin.prepare(pluginConfig, context);
   },
 };
