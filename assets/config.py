@@ -88,9 +88,8 @@ def get_config():
     stash = get_stash_client()
 
     config.PLUGIN_DIR = config.FRAGMENT["server_connection"]['PluginDir']
-    config.PLUGIN_HTTP_ASSETS_PATH = stash.url.replace('/graphql',
-                                                       '/plugin/StashInteractiveTools/assets').replace(
-        "127.0.0.1", config.FRAGMENT["args"].get("hostname", '127.0.0.1'))
+    origin = config.FRAGMENT["args"].get("origin", stash.url.replace('/graphql', ''))
+    config.PLUGIN_HTTP_ASSETS_PATH = f'{origin}/plugin/StashInteractiveTools/assets'
 
     c = stash.find_plugin_config(config.ID)
     config.ENABLE_TAGGING = bool(c.get('enable_tagging'))
