@@ -151,7 +151,7 @@ const InteractiveTools = ({ scene }: SceneFileInfoPanelProps) => {
         args: {
           mode: 'init',
           scene_id: scene.id,
-          hostname: window.location.hostname,
+          origin: window.location.origin,
         },
       },
     }).catch(console.error);
