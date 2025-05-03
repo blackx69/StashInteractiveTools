@@ -1,5 +1,6 @@
 import './style.scss';
 import { FunMapper } from 'funscript-utils';
+
 import {
   SceneDataFragment,
   useRunPluginOperationMutation,
@@ -22,6 +23,7 @@ import { deepMerge } from './deepMerge';
 
 interface SceneFileInfoPanelProps {
   scene: SceneDataFragment;
+  defaultComponent: React.JSX.Element;
 }
 
 const canvas = document.createElement('canvas');
@@ -90,7 +92,10 @@ type ScenePaths = {
   heatMap?: string | null;
 };
 
-const InteractiveTools = ({ scene }: SceneFileInfoPanelProps) => {
+const InteractiveTools = ({
+  scene,
+  defaultComponent,
+}: SceneFileInfoPanelProps) => {
   const [entries, setEntries] = useState<Script[]>([]);
   const [currentPaths, setCurrentPaths] = useState<ScenePaths>({
     blobUrl: scene.paths.funscript || '',
@@ -168,6 +173,7 @@ const InteractiveTools = ({ scene }: SceneFileInfoPanelProps) => {
         defaultScript={defaultPaths.src || ''}
         onChange={onChange}
         options={entries}
+        defaultComponent={defaultComponent}
       />
 
       <StrokeSlider />
@@ -214,7 +220,12 @@ patch.after(
             },
             React.Children.map(children, (inner) => {
               if (inner?.props?.name === 'Funscript')
-                return <InteractiveTools scene={props.scene} />;
+                return (
+                  <InteractiveTools
+                    scene={props.scene}
+                    defaultComponent={inner as React.JSX.Element}
+                  />
+                );
               return inner;
             }),
           );

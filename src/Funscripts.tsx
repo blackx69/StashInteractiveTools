@@ -22,10 +22,17 @@ type Props = {
   value: string;
   defaultScript: string;
   onChange: (script: string) => Promise<void> | void;
+  defaultComponent: React.JSX.Element;
   options: Script[];
 };
 
-const Funscripts = ({ value, onChange, options, defaultScript }: Props) => {
+const Funscripts = ({
+  value,
+  onChange,
+  options,
+  defaultScript,
+  defaultComponent,
+}: Props) => {
   const [selected, setSelected] = useState(value || defaultScript);
   const onInternalChange: ChangeEventHandler<HTMLSelectElement> = useCallback(
     async (e) => {
@@ -34,7 +41,7 @@ const Funscripts = ({ value, onChange, options, defaultScript }: Props) => {
     },
     [onChange, setSelected],
   );
-  return (
+  return options.length > 1 ? (
     <>
       <dt
         style={{ lineHeight: '2.5em' }}
@@ -53,11 +60,6 @@ const Funscripts = ({ value, onChange, options, defaultScript }: Props) => {
             defaultValue={selected}
             onChange={onInternalChange}
           >
-            {!options.length && (
-              <option value={defaultScript} key="default">
-                Default
-              </option>
-            )}
             {options.map((entry) => (
               <option value={entry.path} key={entry.label}>
                 {entry.label}
@@ -67,6 +69,8 @@ const Funscripts = ({ value, onChange, options, defaultScript }: Props) => {
         </Col>
       </Row>
     </>
+  ) : (
+    defaultComponent
   );
 };
 export default Funscripts;

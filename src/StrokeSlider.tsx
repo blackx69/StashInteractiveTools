@@ -13,7 +13,7 @@ const StrokeSlider = () => {
     useStashToolsConfig();
   const [completed, setCompleted] = useState(false);
 
-  const [slideInfo, setSlideInfo] = useState<SlideInfo>({ min: 0, max: 0 });
+  const [slideInfo, setSlideInfo] = useState<SlideInfo>({ min: 0, max: 100 });
 
   const onCommitSliderChanges = useDebouncedCallback(async () => {
     setConfig((v) => ({
