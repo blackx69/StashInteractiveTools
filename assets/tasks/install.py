@@ -1,5 +1,12 @@
 import subprocess
 import sys
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from assets.config import Config
+
+
+
 
 def install_and_import(module_name, package_name):
     import importlib
@@ -15,6 +22,6 @@ def install_and_import(module_name, package_name):
 
 
 
-def run():
+def run(c:'Config'):
     install_and_import('stashapi','stashapp-tools')
 
