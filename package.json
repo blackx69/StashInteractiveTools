@@ -4,7 +4,7 @@
   "main": "dist/cjs/index.js",
   "type": "commonjs",
   "scripts": {
-    "rollup": "rollup -c --bundleConfigAsCjs",
+    "rollup": "rollup -c",
     "release": "cross-env NODE_ENV=production yarn rollup",
     "importApiIndex": "rimraf SCRIPTAPIINDEX && openapi --exportSchemas true --input https://scripts01.handyfeeling.com/api/script/index/v0/spec --output SCRIPTAPIINDEX --name ScriptApiIndex --indent 4",
     "prepare": "husky",
