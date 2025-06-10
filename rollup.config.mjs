@@ -11,11 +11,50 @@ import zip from 'rollup-plugin-zip';
 import fs from 'fs';
 import path from 'path';
 import strip from '@rollup/plugin-strip';
+import semanticRelease from 'semantic-release';
+import YAML from 'yaml';
 
 import 'dotenv/config';
-
+import { Writable } from 'stream';
 const ASSETS_TO_OMIT = ['payload.json'];
-function emitAssets(assetsDir) {
+const META_FILE_PATH = 'dist/StashInteractiveTools.yml';
+const nullWriteStream = new Writable({
+  write(chunk, encoding, callback) {
+    // Do nothing with the chunk
+    callback();
+  },
+});
+
+function updateMetadataVersionPlugin() {
+  return {
+    name: 'update-metadata-version-plugin',
+    async buildEnd() {
+      const results = await semanticRelease(
+        { dryRun: true },
+        {
+          stdout: nullWriteStream,
+          error: nullWriteStream,
+        },
+      );
+      if (!results) {
+        console.log('Skipping updating dist/StashInteractiveTools.yml');
+        return;
+      }
+      console.log(
+        `Updating StashInteractiveTools.yml -> ${results.nextRelease.version}`,
+      );
+
+      fs.writeFileSync(
+        META_FILE_PATH,
+        YAML.stringify({
+          ...YAML.parse(fs.readFileSync(META_FILE_PATH, 'utf8')),
+          version: results.nextRelease.version,
+        }),
+      );
+    },
+  };
+}
+function emitAssetsPlugin(assetsDir) {
   return {
     name: 'mark-assets',
     buildStart() {
@@ -70,10 +109,11 @@ const plugins = [
     name: 'index.css',
     fileName: 'index.css',
   }), //
-  emitAssets('assets'),
+  emitAssetsPlugin('assets'),
 ];
 
 if (prod) {
+  plugins.push(updateMetadataVersionPlugin());
   plugins.push(zip({ file: 'StashInteractiveTools.zip' }));
   plugins.push(strip({}));
 }

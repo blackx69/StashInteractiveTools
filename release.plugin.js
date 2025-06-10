@@ -21,7 +21,7 @@ const CONFIGS = {
       assets: ['./stash.yml'],
     },
     next: {
-      assets: ['./stash.yml', './stash-next.yml'],
+      assets: ['./stash-next.yml'],
     },
   },
 };
