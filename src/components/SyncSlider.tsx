@@ -1,5 +1,5 @@
 import { ChangeEvent } from 'react';
-import { libraries, React } from './api';
+import { libraries, React } from '../api';
 import Slider, { SliderContext, SliderOnSetup } from './Slider';
 
 const { Form } = libraries.Bootstrap;

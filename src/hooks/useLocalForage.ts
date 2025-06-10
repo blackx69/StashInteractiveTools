@@ -5,8 +5,8 @@ import { SlideInfo } from 'thehandy/src/types';
 import {
   ConfigurationQueryHookResult,
   ConfigureInterfaceMutationHookResult,
-} from './generated-graphql';
-import { GQL, hooks, utils } from './api';
+} from '../generated-graphql';
+import { GQL, hooks, utils } from '../api';
 
 interface ILocalForage<T> {
   data: T;

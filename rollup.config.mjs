@@ -129,6 +129,7 @@ export default [
   if(name ==='global/window') return window;
   if(name ==='global/document') return window.document;
   if(name ==='video.js') return window.PluginApi.libraries.videojs;
+  if(name ==='react-intl') return window.PluginApi.libaries.Intl;
 };
 `,
         //file: packageJson.main,
@@ -142,6 +143,6 @@ export default [
     ],
     plugins,
 
-    external: ['react', 'react-dom', 'thehandy', 'video.js'],
+    external: ['react', 'react-dom', 'thehandy', 'video.js', 'react-intl'],
   },
 ];

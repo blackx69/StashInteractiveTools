@@ -1,9 +1,9 @@
 import { ChangeEventHandler, useCallback, useEffect, useState } from 'react';
 import { SlideInfo } from 'thehandy/src/types';
-import { useStashToolsConfig } from './useLocalForage';
+import { useStashToolsConfig } from '../hooks';
 import { useDebouncedCallback } from 'use-debounce';
 
-import { hooks, libraries, React } from './api';
+import { hooks, libraries, React } from '../api';
 
 const { Form } = libraries.Bootstrap;
 
