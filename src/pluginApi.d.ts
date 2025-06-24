@@ -1019,6 +1019,22 @@ declare namespace PluginApi {
       ScenePreview: React.FC<IScenePreviewProps>;
     }>;
   }
+  export interface ISettingModal<T> {
+    heading?: React.ReactNode;
+    headingID?: string;
+    subHeadingID?: string;
+    subHeading?: React.ReactNode;
+    value: T | undefined;
+    close: (v?: T) => void;
+    renderField: (
+      value: T | undefined,
+      setValue: (v?: T) => void,
+      error?: string,
+    ) => React.JSX.Element;
+    modalProps?: typeof import('react-bootstrap').ModalProps;
+    validate?: (v: T) => boolean | undefined;
+    error?: string | undefined;
+  }
   const components: {
     HoverPopover: React.FC<any>;
     TagLink: React.FC<any>;
@@ -1058,6 +1074,7 @@ declare namespace PluginApi {
     StringListSetting: React.FC<any>;
     ConstantSetting: React.FC<any>;
     SceneFileInfoPanel: Rect.FC<any>;
+    SettingModel: <T>(props: ISettingModal<T>) => React.ReactNode;
   };
   namespace utils {
     namespace NavUtils {

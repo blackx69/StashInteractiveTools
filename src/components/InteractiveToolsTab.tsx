@@ -1,12 +1,10 @@
-import { React } from '../api';
+import React from 'react';
 import { SceneDataFragment } from '../generated-graphql';
-import {
-  InteractiveToolsProvider,
-  useInteractiveTools,
-} from '../hooks/useInteractiveTools';
+import { InteractiveToolsProvider, useInteractiveTools } from '../hooks';
 import StrokeSlider from './StrokeSlider';
 import SyncSlider from './SyncSlider';
 import ScriptChooser from './ScriptChooser';
+import { ModifyScript } from './ModifyScript';
 
 type Props = {
   scene: SceneDataFragment;
@@ -28,6 +26,7 @@ const InteractiveToolsContent = () => {
         <StrokeSlider />
         <SyncSlider />
       </dl>
+      <ModifyScript />
     </div>
   );
 };

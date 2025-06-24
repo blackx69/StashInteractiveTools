@@ -1,5 +1,5 @@
-import { ChangeEventHandler, useCallback, useState } from 'react';
-import { libraries, React } from '../api';
+import React, { ChangeEventHandler, useCallback, useState } from 'react';
+import { libraries } from '../api';
 
 const fullWidthProps = {
   labelProps: {
@@ -51,7 +51,6 @@ const ScriptChooser = ({ value, onChange, options, defaultScript }: Props) => {
             className="input-control"
             {...fullWidthProps.fieldProps}
             value={selected}
-            defaultValue={selected}
             onChange={onInternalChange}
           >
             {options.map((entry) => (

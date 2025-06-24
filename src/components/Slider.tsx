@@ -9,7 +9,8 @@ import {
 import videojs from 'video.js';
 import { useDebouncedCallback } from 'use-debounce';
 import { StashToolsConfig, useStashToolsConfig } from '../hooks';
-import { hooks, React } from '../api';
+import React from 'react';
+import { hooks } from '../api';
 import InteractiveAPI = PluginApi.hooks.InteractiveAPI;
 
 type PlayerElement = { player?: videojs.Player } | undefined;

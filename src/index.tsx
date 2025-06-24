@@ -1,12 +1,10 @@
 import './style.scss';
 
 import { SceneDataFragment } from './generated-graphql';
-import { PropsWithChildren } from 'react';
+import React, { PropsWithChildren } from 'react';
 import { InteractiveToolsTab } from './components';
-import { libraries, patch, React } from './api';
-
-const { Nav, Tab } = libraries.Bootstrap;
-const { FormattedMessage } = libraries.Intl;
+import { Nav, Tab } from 'react-bootstrap';
+import { patch } from './api';
 
 interface SceneFileInfoPanelProps {
   scene: SceneDataFragment;
@@ -17,12 +15,7 @@ patch.after('ScenePage.Tabs', (props: PropsWithChildren) => {
     <>
       {props.children}
       <Nav.Item>
-        <Nav.Link eventKey="scene-interactive-panel">
-          <FormattedMessage
-            id="actions.interactive.edit"
-            defaultMessage="Interactive"
-          />
-        </Nav.Link>
+        <Nav.Link eventKey="scene-interactive-panel">Interactive</Nav.Link>
       </Nav.Item>
     </>
   );

@@ -79,3 +79,19 @@
     background-image: var(--stash-interactive-tools-heatmap) !important;
   }
 }
+
+.stash-interactive-tools-modify {
+  margin-top: 10px;
+  h5 {
+    button {
+      display: inline-block !important;
+    }
+  }
+}
+.stash-interactive-tools-modifier-block {
+  background-color: var(--secondary);
+  h5 svg {
+    font-size: x-small;
+    vertical-align: 0.125em;
+  }
+}
